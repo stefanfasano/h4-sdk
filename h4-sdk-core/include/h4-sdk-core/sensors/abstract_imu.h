@@ -10,35 +10,36 @@
 
 class abstract_imu
 {
-  std::string name;
+  protected:
+  std::string name_;
 
   std::array<float, 3> position; // In world frame (x, y, z)
   std::array<float, 4> quaternion; // In world frame (x, y, z, s)
   std::array<float, 3> angularVelocity; // In sensor frame (x, y, z)
-  std::array<float, 3> linear_acceleration; // In sensor frame (x, y, z)
+  std::array<float, 3> linearAcceleration; // In sensor frame (x, y, z)
 
   public:
   explicit abstract_imu(const std::string& name);
 
   virtual void update();
 
-  virtual void set_position(float x, float y, float z);
+  virtual void setPosition(const float& x, const float& y, const float& z);
 
-  virtual void set_quaternion(float x, float y, float z, float s);
+  virtual void setQuaternion(const float& x, const float& y, const float& z, const float& s);
 
-  virtual void set_angular_velocity(float x, float y, float z);
+  virtual void setAngularVelocity(const float& x, const float& y, const float& z);
 
-  virtual void set_linear_acceleration(float x, float y, float z);
+  virtual void setLinearAcceleration(const float& x, const float& y, const float& z);
 
-  virtual std::array<float, 3> get_position();
+  virtual std::array<float, 3> getPosition() const { return position; }
 
-  virtual std::array<float, 4> get_quaternion();
+  virtual std::array<float, 4> getQuaternion() const { return quaternion; }
 
-  virtual std::array<float, 3> get_angular_velocity();
+  virtual std::array<float, 3> getAngularVelocity() const { return angularVelocity; }
 
-  virtual std::array<float, 3> get_linear_acceleration();
+  virtual std::array<float, 3> getLinearAcceleration() const { return linearAcceleration; }
 
-  virtual std::string get_name();
+  virtual std::string getName() const { return name_; }
 
   virtual ~abstract_imu() = default;
 };

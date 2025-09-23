@@ -7,18 +7,18 @@
 #include <string>
 
 
-abstract_imu::abstract_imu(const std::string& name) : name(name), position(), quaternion(), angularVelocity(), linear_acceleration() {}
+abstract_imu::abstract_imu(const std::string& name) : name_(name), position(), quaternion(), angularVelocity(), linearAcceleration() {}
 
 void abstract_imu::update() {  }
 
-void abstract_imu::set_position(float x, float y, float z)
+void abstract_imu::setPosition(const float& x, const float& y, const float& z)
 {
   position[0] = x;
   position[1] = y;
   position[2] = z;
 }
 
-void abstract_imu::set_quaternion(float x, float y, float z, float s)
+void abstract_imu::setQuaternion(const float& x, const float& y, const float& z, const float& s)
 {
   quaternion[0] = x;
   quaternion[1] = y;
@@ -26,41 +26,16 @@ void abstract_imu::set_quaternion(float x, float y, float z, float s)
   quaternion[3] = s;
 }
 
-void abstract_imu::set_angular_velocity(float x, float y, float z)
+void abstract_imu::setAngularVelocity(const float& x, const float& y, const float& z)
 {
   angularVelocity[0] = x;
   angularVelocity[1] = y;
   angularVelocity[2] = z;
 }
 
-void abstract_imu::set_linear_acceleration(float x, float y, float z)
+void abstract_imu::setLinearAcceleration(const float& x, const float& y, const float& z)
 {
-  linear_acceleration[0] = x;
-  linear_acceleration[1] = y;
-  linear_acceleration[2] = z;
-}
-
-std::array<float, 3> abstract_imu::get_position()
-{
-  return position;
-}
-
-std::array<float, 4> abstract_imu::get_quaternion()
-{
-  return quaternion;
-}
-
-std::array<float, 3> abstract_imu::get_angular_velocity()
-{
-  return angularVelocity;
-}
-
-std::array<float, 3> abstract_imu::get_linear_acceleration()
-{
-  return linear_acceleration;
-}
-
-std::string abstract_imu::get_name()
-{
-  return name;
+  linearAcceleration[0] = x;
+  linearAcceleration[1] = y;
+  linearAcceleration[2] = z;
 }
