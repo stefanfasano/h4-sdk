@@ -19,41 +19,15 @@
 # along with the soem_interface_rsl.  If not, see <https://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.15)
-project(soem_interface_rsl)
+project(soem_interface_rsl LANGUAGES CXX)
 
-add_definitions(-std=c++17 -Wall -Werror)
-add_definitions(-DMELO_USE_COUT)
+# Build settings
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-
-
-set(PACKAGE_DEPENDENCIES
-  message_logger
-  soem_rsl
-)
-
-find_package(catkin REQUIRED
-  COMPONENTS
-    ${PACKAGE_DEPENDENCIES}
-)
-
-catkin_package(
-  INCLUDE_DIRS
-    include
-  LIBRARIES
-    ${PROJECT_NAME}
-  CATKIN_DEPENDS
-    ${PACKAGE_DEPENDENCIES}
-)
-
-include_directories(
-  include
-  ${catkin_INCLUDE_DIRS}
-)
-
-#this has to be a shared lib because we have to avoid symbol clashes with other (older) versions of SOEM which might exists in the workspace.
-# e.g. ros-noetic-soem package (used by BOTA, ANYbotics.)
-add_library(
-  ${PROJECT_NAME} SHARED
+# Library
+add_library(${PROJECT_NAME} SHARED
   src/${PROJECT_NAME}/common/ThreadSleep.cpp
   src/${PROJECT_NAME}/common/Macros.cpp
   src/${PROJECT_NAME}/EthercatSlaveBase.cpp
@@ -61,31 +35,51 @@ add_library(
   src/${PROJECT_NAME}/EthercatBusBase.cpp
 )
 
-add_dependencies(
-  ${PROJECT_NAME}
-  ${catkin_EXPORTED_TARGETS}
+# Warnings and defs
+if(MSVC)
+  target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+else()
+  target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror)
+endif()
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE MELO_USE_COUT)
+
+# Linker options (GCC/Clang)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  target_link_options(${PROJECT_NAME} PRIVATE "-Wl,--exclude-libs,ALL")
+endif()
+
+# Public include directories
+# soem_rsl will propagate its own includes when linked
+# expose public headers of this project
+
+target_include_directories(${PROJECT_NAME}
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 
-# https://stackoverflow.com/questions/2222162/how-to-apply-fvisibility-option-to-symbols-in-static-libraries
-# special link option.
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--exclude-libs,ALL")
-# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,--exclude-libs,ALL")
-target_link_options(${PROJECT_NAME} PRIVATE "-Wl,--exclude-libs,ALL")
+# Link against sibling dependency target (expected to be provided by add_subdirectory in the parent)
+# Ensure that the parent CMakeLists adds soem_rsl before this directory.
 
-target_link_libraries(
-  ${PROJECT_NAME}
-  ${catkin_LIBRARIES}
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC soem_rsl
 )
 
-#hide all symboles except the explicitly marked ones.
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)
-set_target_properties(${PROJECT_NAME} PROPERTIES C_VISIBILITY_PRESET hidden)
+# Hide all symbols except explicitly exported ones
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  CXX_VISIBILITY_PRESET hidden
+  C_VISIBILITY_PRESET hidden
+  VISIBILITY_INLINES_HIDDEN ON
+)
 
+# Install rules (standard locations)
 install(TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
+
 install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  DESTINATION include/${PROJECT_NAME}
 )

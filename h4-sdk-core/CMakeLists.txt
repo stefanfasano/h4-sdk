@@ -19,16 +19,19 @@
 # along with the soem_interface_rsl.  If not, see <https://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.14)
-project(soem_interface_examples LANGUAGES CXX)
+project(h4-sdk-core LANGUAGES CXX)
 
 # Build settings
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Library
 add_library(${PROJECT_NAME}
-  src/${PROJECT_NAME}/ExampleSlave.cpp
+  src/${PROJECT_NAME}/sensors/abstract_imu.cpp
+  src/${PROJECT_NAME}/sensors/abstract_motor_controller.cpp
+  src/${PROJECT_NAME}/sensors/h4_ethersnacks_board.cpp
+  src/${PROJECT_NAME}/sensors/h4_imu.cpp
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror)
@@ -53,22 +56,22 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # Example executable
-add_executable(${PROJECT_NAME}_1
-  src/example_slave.cpp
-)
-
-target_compile_options(${PROJECT_NAME}_1 PRIVATE -Wall -Werror)
-
-target_link_libraries(${PROJECT_NAME}_1
-  PRIVATE ${PROJECT_NAME}
-)
-
-# Install rules (standard locations)
-install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_1
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
+#add_executable(${PROJECT_NAME}_1
+#  src/example_slave.cpp
+#)
+#
+#target_compile_options(${PROJECT_NAME}_1 PRIVATE -Wall -Werror)
+#
+#target_link_libraries(${PROJECT_NAME}_1
+#  PRIVATE ${PROJECT_NAME}
+#)
+#
+## Install rules (standard locations)
+#install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_1
+#  ARCHIVE DESTINATION lib
+#  LIBRARY DESTINATION lib
+#  RUNTIME DESTINATION bin
+#)
 
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include/${PROJECT_NAME}
