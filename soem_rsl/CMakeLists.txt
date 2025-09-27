@@ -48,23 +48,23 @@ endif()
 message(STATUS "OS is ${OS}")
 
 # Install destinations (plain CMake defaults)
-set(soem_rsl_INCLUDE_INSTALL_DIR include/soem_rsl)
+set(soem_rsl_INCLUDE_INSTALL_DIR include/${PROJECT_NAME})
 set(soem_rsl_LIB_INSTALL_DIR ${soem_rsl_LIB_INSTALL_DIR})
 if(NOT soem_rsl_LIB_INSTALL_DIR)
   set(soem_rsl_LIB_INSTALL_DIR lib)
 endif()
 
 # Sources and headers
-file(GLOB soem_rsl_SOURCES soem_rsl/soem_rsl/*.c)
-file(GLOB OSAL_SOURCES soem_rsl/osal/${OS}/*.c)
-file(GLOB OSHW_SOURCES soem_rsl/oshw/${OS}/*.c)
+file(GLOB soem_rsl_SOURCES src/${PROJECT_NAME}/${PROJECT_NAME}/*.c)
+file(GLOB OSAL_SOURCES src/${PROJECT_NAME}/osal/${OS}/*.c)
+file(GLOB OSHW_SOURCES src/${PROJECT_NAME}/oshw/${OS}/*.c)
 
-file(GLOB soem_rsl_HEADERS soem_rsl/soem_rsl/*.h)
-file(GLOB OSAL_HEADERS soem_rsl/osal/osal.h soem_rsl/osal/${OS}/*.h)
-file(GLOB OSHW_HEADERS soem_rsl/oshw/${OS}/*.h)
+file(GLOB soem_rsl_HEADERS include/${PROJECT_NAME}/${PROJECT_NAME}/*.h)
+file(GLOB OSAL_HEADERS src/${PROJECT_NAME}/osal/osal.h src/${PROJECT_NAME}/osal/${OS}/*.h)
+file(GLOB OSHW_HEADERS src/${PROJECT_NAME}/oshw/${OS}/*.h)
 
 # Library target
-add_library(soem_rsl STATIC
+add_library(${PROJECT_NAME} SHARED
   ${soem_rsl_SOURCES}
   ${OSAL_SOURCES}
   ${OSHW_SOURCES}
@@ -78,11 +78,11 @@ set_target_properties(soem_rsl PROPERTIES POSITION_INDEPENDENT_CODE ON)
 # Build tree includes match source layout; install tree installs headers into include/soem_rsl
 
 target_include_directories(soem_rsl PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/soem_rsl/soem_rsl>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/soem_rsl/osal>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/soem_rsl/osal/${OS}>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/soem_rsl/oshw/${OS}>
-  $<INSTALL_INTERFACE:include/soem_rsl>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src/${PROJECT_NAME}/osal>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src/${PROJECT_NAME}/osal/${OS}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src/${PROJECT_NAME}/oshw/${OS}>
+        $<INSTALL_INTERFACE:include>
 )
 
 message(STATUS "LIB_DIR: ${soem_rsl_LIB_INSTALL_DIR}")
@@ -100,13 +100,13 @@ install(FILES
 
 # For compatibility some consumers expect ethercattype.h directly in include/
 install(FILES
-  ./soem_rsl/soem_rsl/ethercattype.h
+        src/${PROJECT_NAME}/${PROJECT_NAME}/ethercattype.h
   DESTINATION ${CMAKE_INSTALL_PREFIX}/include
 )
 
 # Tests (Linux paths; retained from original)
 if(BUILD_TESTS)
-  add_subdirectory(soem_rsl/test/linux/slaveinfo)
-  add_subdirectory(soem_rsl/test/linux/eepromtool)
-  add_subdirectory(soem_rsl/test/linux/simple_test)
+  add_subdirectory(src/${PROJECT_NAME}/test/linux/slaveinfo)
+  add_subdirectory(src/${PROJECT_NAME}/test/linux/eepromtool)
+  add_subdirectory(src/${PROJECT_NAME}/test/linux/simple_test)
 endif()

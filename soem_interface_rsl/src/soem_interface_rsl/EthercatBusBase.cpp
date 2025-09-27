@@ -23,7 +23,7 @@
 #include <soem_interface_rsl/EthercatBusBase.hpp>
 #include <soem_interface_rsl/EthercatSlaveBase.hpp>
 
-#include <soem_rsl/ethercat.h>
+#include <soem_rsl/soem_rsl/ethercat.h>
 
 namespace soem_interface_rsl {
 

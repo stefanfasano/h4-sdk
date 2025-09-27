@@ -18,8 +18,8 @@
 #include <string.h>
 #include "oshw.h"
 #include "osal.h"
-#include "ethercattype.h"
-#include "ethercatbase.h"
+#include "soem_rsl/soem_rsl/ethercattype.h"
+#include "soem_rsl/soem_rsl/ethercatbase.h"
 
 /** Write data to EtherCAT datagram.
  *
